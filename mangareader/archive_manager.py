@@ -3,6 +3,14 @@ from zipfile import ZipFile
 from tarfile import TarFile
 from io import BytesIO 
 
+regex = re.compile("\d+")
+
+# courtesy of http://stackoverflow.com/questions/4623446/how-do-you-sort-files-numerically
+def alphanum_key(s):
+    """ Turn a string into a list of string and number chunks.
+        "z23a" -> ["z", 23, "a"]
+    """
+    return [ tryint(c) for c in re.split('([0-9]+)', s) ]
 
 class ArchiveManager:
     def __init__(self):
@@ -31,7 +39,11 @@ class ArchiveManager:
         else:
             raise("archive not supported")
 
-        self.listfile = sorted([x for x in namelist if not x.endswith('/')])
+        # we sort the files by decimal found, excluding directories /
+        self.listfile = sorted(
+            [x for x in namelist if not x.endswith('/')],
+            key=alphanum_key(name)
+        )
 
         self.archive_length = len(self.listfile)
         self.listfile_index = 0
