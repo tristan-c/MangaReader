@@ -1,9 +1,16 @@
 import os
+import re
 from zipfile import ZipFile
 from tarfile import TarFile
 from io import BytesIO 
 
 regex = re.compile("\d+")
+
+def tryint(s):
+    try:
+        return int(s)
+    except:
+        return s
 
 # courtesy of http://stackoverflow.com/questions/4623446/how-do-you-sort-files-numerically
 def alphanum_key(s):
@@ -42,7 +49,7 @@ class ArchiveManager:
         # we sort the files by decimal found, excluding directories /
         self.listfile = sorted(
             [x for x in namelist if not x.endswith('/')],
-            key=alphanum_key(name)
+            key=lambda name: alphanum_key(name)
         )
 
         self.archive_length = len(self.listfile)
